@@ -1,0 +1,14 @@
+{
+	"files": [
+		"intro.js",
+		"Modernizr.js",
+		"support.js",
+		"parser.js",
+		"normalise.js",
+		"nesting.js",
+		"outro.js"
+	],
+	"mode": "combine",
+	"minify": true,
+	"output": "nesting.js"
+}
