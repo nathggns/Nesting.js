@@ -9,11 +9,12 @@ Nesting.js is a pollyfill designed to allow you to use nesting in `CSS` **now** 
  * All rules not found inside *blocks* will completely kill your website, like, literally.
  * Preformance is probably terrible.
  * The normaliser is extremely restricted, so parsing could die if you write your `CSS` any different from how I do.
- * Haven't even read the official `W3C` syntax for nesting (if there is even one), this is based on the syntax for `SCSS`.
+ * May mess up your overwritten rules, as all blocks are grouped.
 
 ## Features
 
-Only the extreme basics of nesting is supported. Litterally, the only thing it does is allows the single defining features of nesting. Like, not even the typical `&` operator is supported yet.
+ * Only the extreme basics of nesting is supported.
+ * Based on the syntax proposed [here](http://lists.w3.org/Archives/Public/www-style/2011Jun/0022.html)
 
 ## Note
 

@@ -1,44 +1,86 @@
-var parse = function(css) {
-	chars = css.split('');
-		buffers = [''];
-		level = 0;
-		selectors = [];
-		tree = [];
-		modes = [];
+this.parse = function(content) {
+	var chrs = content.split(''),
+		blocks = [],
+		buffer = '',
+		level = 0,
+		support = this.support;
 
-	for (var key in chars) {
-		var chr = chars[key],
-			buff = buffers[level];
-
-		buffers[level] += chr;
-
+	support.each(chrs, function(chr) {
+		buffer += chr;
 		switch (chr) {
 			case '{':
-				var parts = buff.split(";");
-				buffers[level] = buff.replace(parts[parts.length-1], "");
-				selectors.push(parts[parts.length-1]);
-				buffers[++level] = '';
+				level++;
 				break;
 			case '}':
-				var currentSelector = selectors.slice(0, level).join(" "),
-					found = false, rules = buff.substr(0, buff.length-1).split(";");
-				tree.push([currentSelector, rules]);
-				buffers[level--] = '';
-				selectors = currentSelector.split(" ");
+				level--;
+				if (level === 0) {
+					blocks.push(buffer);
+					buffer = '';
+				}
+		};
+	});
+
+	newblocks = [];
+
+	blocks = support.each(blocks, function(block) {
+		var newblock = nesting.shift(block);
+		newblocks.push(newblock[0]);
+		(function(block) {
+			if (block[1] != "") {
+				newblocks.push(block[1][0]);
+				arguments.callee(block[1]);
+			};
+		})(newblock);
+	});
+
+	return this.normalise(newblocks).join("");
+};
+
+this.shift = function(block, parent) {
+	parent = parent || '';
+	var level = 0,
+		buffer = '',
+		chrs = block.split(""),
+		support = this.support,
+		mode = 'normal',
+		selector = '',
+		newblock = '';
+
+	support.each(chrs, function(chr, key) {
+		if (mode === 'selector') {
+			selector += chr;
+		}
+		if (level > 1) {
+			buffer += chr;
+		} else if (mode === 'normal' && chr != "&") {
+			newblock += chr;
+		}
+
+		switch (chr) {
+			case '&':
+				if (level === 1) {
+					mode = 'selector';
+					chr = '';
+				}
+				break;
+			case '{':
+				mode = 'normal'
+				level++;
+				break;
+			case '}':
+				level--;
 				break;
 		};
-	};
-	
-	// Turn tree into css :D
-	var css = '';
+	});
+	if (selector.length > 0) {
+		if (parent === '') {
+			parent = block.split("{")[0].trim();
+		};
 
-	for (var key in tree) {
-		var block = tree[key],
-			selector = block[0],
-			rules = block[1];
-
-		css += selector + "{" + rules.join(";") + ";}";
+		buffer = parent + " " + selector.trim() + buffer.trim();
+		buffer = this.shift(buffer);
 	};
 
-	return css;
+	if (newblock === '') newblock = block;
+	return [newblock, buffer];
 };
