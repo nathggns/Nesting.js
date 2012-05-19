@@ -1,11 +1,10 @@
 {
 	"files": [
 		"intro.js",
-		"Modernizr.js",
 		"support.js",
+		"normaliser.js",
 		"parser.js",
-		"normalise.js",
-		"nesting.js",
+		"run.js",
 		"outro.js"
 	],
 	"mode": "combine",
