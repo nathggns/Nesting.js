@@ -1,38 +1,23 @@
-<html>
+<!DOCTYPE HTML>
+<html lang="en-US">
 <head>
+	<meta charset="UTF-8">
 	<title>Nesting.js Test</title>
-	<link rel="stylesheet" href="style.css">
-	<style type="text/css">
-	* { padding: 0; margin: 0; }
+	<!--<style type="text/css">
 	body {
-		font-family: "Georgia";
-		color: #222;
-		background: #fafafa;
-		line-height: 1.5em;
-		text-align: center;
-		text-shadow: 0 1px 0 #fff;
+		background: #000;
+
+		header {
+			width: 100%;
+			height: 50px;
+			background: #ccc;
+		}
 	}
-	.wrap {
-		margin: 20px auto;
-		width: 600px;
-		text-align: center;
-		& .local .not { display: none; }
-	}
-	.local, .remote {
-		margin-bottom: 1.5em;
-	}
-	.does, .not { font-weight: bold; }
-	</style>
+	</style>-->
+	<link rel="stylesheet" href="style.css">
 	<script type="text/javascript" src="scripts.php"></script>
 </head>
 <body>
-	<div class="wrap">
-		<div class="local">
-			Your browser <span class="does">does</span> <span class="not">not</span> support Nesting.js in local sources.
-		</div>
-		<div class="remote">
-			Your browser <span class="does">does</span> <span class="not">not</span> support Nesting.js in remote sources.
-		</div>
-	</div>
+	<header>Nesting.js</header>
 </body>
 </html>

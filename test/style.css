@@ -1,5 +1,19 @@
-.remote {
-	& .not {
-		display: none;
+body {
+	background: #000;
+
+	& header {
+		width: 100%;
+		height: 50px;
+		background: #ccc;
+
+		& p {
+			background: #f00;
+		}
 	}
+
+	color: #fff;
+}
+
+header {
+	font-weight: bold;
 }
