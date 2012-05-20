@@ -59,12 +59,12 @@ this.support = new (function() {
 	};
 
 	// Occurs helper
-	this.occurs = function(string, char) {
+	this.occurs = function(string, ochar) {
 		var chrs = string.split(""),
 			times = 0;
 
 		this.each(chrs, function(chr, key) {
-			if (chr === char) times++;
+			if (chr === ochar) times++;
 		});
 
 		return times;
