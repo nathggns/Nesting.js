@@ -1,356 +1,274 @@
-(function(window, document, undefined) {if (!window.Modernizr) {
-	window.Modernizr = (function( window, document, undefined ) {
-		var version = '2.5.3',
-		Modernizr = {},
+/* CSS Nesting Polyfill */
+(function(window, document, undefined) {
+	nesting = new (function() {/* Support library written specifically for nesting.js. */
+this.support = new (function() {
+	// Basic Event Handler. Should work in all browsers
+	this.event = function(element, event, callback) {
+		// Decide what event handler function we use
+		if (document.addEventListener) {
+			element.addEventListener(event, callback);
+		} else if (document.attachEvent) {
+			element.attachEvent("on" + event, callback);
+		} else { return false; };
 
-		docElement = document.documentElement,
-		mod = 'modernizr',
-		modElem = document.createElement(mod),
-		mStyle = modElem.style,
-		inputElem ,
-		toString = {}.toString,    tests = {},
-		inputs = {},
-		attrs = {},
-		classes = [],
-		slice = classes.slice,
-		featureName,
-		_hasOwnProperty = ({}).hasOwnProperty, hasOwnProperty;
-
-		if ( !is(_hasOwnProperty, 'undefined') && !is(_hasOwnProperty.call, 'undefined') ) {
-			hasOwnProperty = function (object, property) {
-				return _hasOwnProperty.call(object, property);
-			};
-		}
-		else {
-			hasOwnProperty = function (object, property) { 
-				return ((property in object) && is(object.constructor.prototype[property], 'undefined'));
-			};
-		}
-
-
-		if (!Function.prototype.bind) {
-			Function.prototype.bind = function bind(that) {
-
-				var target = this;
-
-				if (typeof target != "function") {
-					throw new TypeError();
-				}
-
-				var args = slice.call(arguments, 1),
-						bound = function () {
-
-						if (this instanceof bound) {
-
-							var F = function(){};
-							F.prototype = target.prototype;
-							var self = new F;
-
-							var result = target.apply(
-								self,
-								args.concat(slice.call(arguments))
-							);
-							if (Object(result) === result) {
-								return result;
-							}
-							return self;
-
-						} else {
-
-							return target.apply(
-								that,
-								args.concat(slice.call(arguments))
-							);
-
-						}
-
-				};
-
-				return bound;
-			};
-		}
-
-		function setCss( str ) {
-			mStyle.cssText = str;
-		}
-
-		function setCssAll( str1, str2 ) {
-			return setCss(prefixes.join(str1 + ';') + ( str2 || '' ));
-		}
-
-		function is( obj, type ) {
-			return typeof obj === type;
-		}
-
-		function contains( str, substr ) {
-			return !!~('' + str).indexOf(substr);
-		}
-
-
-		function testDOMProps( props, obj, elem ) {
-			for ( var i in props ) {
-					var item = obj[props[i]];
-					if ( item !== undefined) {
-						if (elem === false) return props[i];
-
-						if (is(item, 'function')){
-							return item.bind(elem || obj);
-						}
-						return item;
-					}
-			}
-			return false;
-		}
-
-
-
-		for ( var feature in tests ) {
-				if ( hasOwnProperty(tests, feature) ) {
-						featureName  = feature.toLowerCase();
-						Modernizr[featureName] = tests[feature]();
-
-						classes.push((Modernizr[featureName] ? '' : 'no-') + featureName);
-				}
-		}
-
-
-		setCss('');
-		modElem = inputElem = null;
-
-
-		Modernizr._version      = version;
-
-
-		//Modernizr.testStyles    = injectElementWithStyles;
-		return Modernizr;
-
-	})(this, this.document);
-};
-
-if (!window.Modernizr.addTest) {
-	Modernizr.addTest = function ( feature, test ) {
-		if ( typeof feature == 'object' ) {
-			for ( var key in feature ) {
-				if ( hasOwnProperty( feature, key ) ) {
-					Modernizr.addTest( key, feature[ key ] );
-				}
-			}
-		} else {
-
-			feature = feature.toLowerCase();
-			if ( Modernizr[feature] !== undefined ) {
-				return Modernizr;
-			}
-			test = typeof test == 'function' ? test() : test;
-			Modernizr[feature] = test;
-		}
-
-		return Modernizr; 
+		return true;
 	};
-}
 
-if (!window.Modernizr.testStyles) {
-	Modernizr.testStyles = function( rule, callback, nodes, testnames ) {
-		var style, ret, node,
-			div = document.createElement('div'),
-			body = document.body, 
-			fakeBody = body ? body : document.createElement('body');
+	// DOM Ready Event Handler, basically a wrapper for support.event in modern browsers
+	this.ready = function(callback) {
+		if (document.addEventListener)
+			return this.event(document, 'DOMContentLoaded', callback);
+		// Do scroll hack for IE.
+		// Tries to use the DOM, if it can't, tries again until it can.
+		(function() {
+			try {
+				document.documentElement.doScroll("left", 1);
+			} catch(e) {
+				return setTimeout(arguments.callee, 1);
+			};
+			callback.call(document);
+		})();
+	};
 
-		if ( parseInt(nodes, 10) ) {
-			while ( nodes-- ) {
-				node = document.createElement('div');
-				node.id = testnames ? testnames[nodes] : mod + (nodes + 1);
-				div.appendChild(node);
-			}
-		}
-
-		style = ['&#173;','<style>', rule, '</style>'].join('');
-		div.id = mod;
-		(body ? div : fakeBody).innerHTML += style;
-		fakeBody.appendChild(div);
-		if(!body){
-			fakeBody.style.background = "";
-			docElement.appendChild(fakeBody);
-		}
-
-		ret = callback(div, rule);
-			!body ? fakeBody.parentNode.removeChild(fakeBody) : div.parentNode.removeChild(div);
-
-		return !!ret;
-
-	}
-}// IE XMLHttpRequest pollyfill
-if (typeof window.XMLHttpRequest === 'undefined' && typeof window.ActiveXObject === 'function') {
+	// Ajax Helper.
+	// First thing to do, is make IE act like modern browsers
+	if (typeof window.XMLHttpRequest === 'undefined' && 
+		typeof window.ActiveXObject === 'function') {
 		window.XMLHttpRequest = function() {
 			try { return new ActiveXObject('Msxml2.XMLHTTP.6.0'); } catch (e) {};
 			try { return new ActiveXObject('Msxml2.XMLHTTP.3.0'); } catch (e) {};
 			return new ActiveXObject('Microsoft.XMLHTTP');
 		};
-};
-window.Support = {
-	'event': function(elem, event, callback) {
-		if (document.addEventListener) {
-			elem.addEventListener(event, callback);
-			return true;
-		} else if (document.attachEvent) {
-			document.attachEvent("on" + event, callback);
-			return true;
-		};
-		return false;
-	},
-	'ready': function(callback) {
-		if (document.addEventListener) return Support.event(document, 'DOMContentLoaded', callback);
-		(function() {
-			try {
-				document.documentElement.doScroll("left", 1);
-			} catch (e) {
-				return setTimeout(arguments.callee, 1);
-			};
-			callback.call(document);
-		})();
-	},
-	'request': function(url, callback) {
+	};
+	// Create the helper. Gonna do it asynchronously
+	this.request = function(url, callback, mode) {
 		var req = new XMLHttpRequest;
-		req.open('GET', url);
-		Support.event(req, 'load', function() {
-			callback(req.responseText, req);
+		req.open(mode || 'GET', url);
+		// Run callback when the request is done. Gonna use support.event
+		this.event(req, 'load', function() {
+			callback.call(nesting, req.responseText, req);
 		});
+		// Send the request
 		req.send();
-	},
-	'each': function(array, callback) {
+	};
+
+	// Loop helper. Can be used like PHPs array_map, or jQuery.each
+	this.each = function(array, callback) {
 		for (var key = 0; key < array.length; key++) {
-			callback(array[key], key, array);
+			array[key] = callback.call(nesting, array[key], key, array);
 		};
-	},
-	'last': function(arr) {
-		return arr[arr.length-1];
-	}
-};var parse = function(css) {
-	chars = css.split('');
-		buffers = [''];
-		level = 0;
-		selectors = [];
-		tree = [];
-		modes = [];
+		return array;
+	};
 
-	for (var key in chars) {
-		var chr = chars[key],
-			buff = buffers[level];
+	// Occurs helper
+	this.occurs = function(string, ochar) {
+		var chrs = string.split(""),
+			times = 0;
 
-		buffers[level] += chr;
+		this.each(chrs, function(chr, key) {
+			if (chr === ochar) times++;
+		});
 
+		return times;
+	};
+
+	// Expose string.trim as a normal function
+	this.trim = function(value) { return value.trim(); };
+
+	// Get last element of an array
+	this.last = function(array) { return array[array.length-1]; };
+});// Normaliser for outputed css, as the parser destroys it.
+this.normalise = function(blocks, mod) {
+	if (typeof blocks === "string") return this.normalise([blocks], true);
+	var support = this.support,
+		replacements = [["\t",""],["\n", ""],[": ", ":"]];
+
+	blocks = support.each(blocks, function(block) {
+		for (var key in replacements) {
+			var r = replacements[key];
+			while (block !== block.replace(r[0], r[1]))
+				block = block.replace(r[0], r[1]);
+		}
+		return block;
+	});
+
+	return mod ? blocks[0] : blocks;
+};this.parse = function(content) {
+	var chrs = content.split(''),
+		blocks = [],
+		buffer = '',
+		level = 0,
+		support = this.support;
+
+	support.each(chrs, function(chr) {
+		buffer += chr;
 		switch (chr) {
 			case '{':
-				var parts = buff.split(";");
-				buffers[level] = buff.replace(parts[parts.length-1], "");
-				selectors.push(parts[parts.length-1]);
-				buffers[++level] = '';
+				level++;
 				break;
 			case '}':
-				var currentSelector = selectors.slice(0, level).join(" "),
-					found = false, rules = buff.substr(0, buff.length-1).split(";");
-				tree.push([currentSelector, rules]);
-				buffers[level--] = '';
-				selectors = currentSelector.split(" ");
+				level--;
+				if (level === 0) {
+					blocks.push(buffer);
+					buffer = '';
+				}
+		};
+	});
+
+	newblocks = [];
+
+	blocks = support.each(blocks, function(block) {
+		// Skip special blocks. Will support @media in the future.
+		var special = ["font-face", "media"],
+			isSpecial = false;
+
+		support.each(special, function(s) {
+			if (block.replace("@" + s, "") !== block) isSpecial = true;
+		});
+		if (isSpecial) {
+			newblocks.push(block);
+			return block;
+		}
+		
+		// Add this blocks to the stack
+		var newblock = nesting.shift(block);
+		newblocks.push(newblock[0]);
+		(function(block) {
+			if (block[1] != "") {
+				newblocks.push(block[1][0]);
+				arguments.callee(block[1]);
+			};
+		})(newblock);
+	});
+
+	return this.normalise(newblocks).join("");
+};
+
+this.shift = function(block, parent) {
+	parent = parent || '';
+	var level = 0,
+		buffer = '',
+		chrs = block.split(""),
+		support = this.support,
+		mode = 'normal',
+		selector = '',
+		newblock = '';
+
+	support.each(chrs, function(chr, key) {
+		if (mode === 'selector') {
+			selector += chr;
+		}
+		if (level > 1) {
+			buffer += chr;
+		} else if (mode === 'normal' && chr != "&") {
+			newblock += chr;
+		}
+
+		switch (chr) {
+			case '&':
+				if (level === 1) {
+					mode = 'selector';
+					chr = '';
+				}
+				break;
+			case '{':
+				mode = 'normal'
+				level++;
+				break;
+			case '}':
+				level--;
 				break;
 		};
-	};
-	
-	// Turn tree into css :D
-	var css = '';
+	});
+	if (selector.length > 0) {
+		if (parent === '') {
+			parent = block.split("{")[0].trim();
+		};
 
-	for (var key in tree) {
-		var block = tree[key],
-			selector = block[0],
-			rules = block[1];
-
-		css += selector + "{" + rules.join(";") + ";}";
+		buffer = parent + " " + selector.trim() + buffer.trim();
+		buffer = this.shift(buffer);
 	};
 
-	return css;
-};var normalise = function(css) {
-	var replacements = {
-		"\n": "",
-		"\t": "",
-		": ": ":",
-		" {": "{",
-		" }": "}"
-	};
-	for (var key in replacements) {
-		var result = replacements[key]
-		while (css.replace(key, result) != css) css = css.replace(key, result);
-	};
-	return css;
-};
-if (!window.Modernizr || !Modernizr.addTest || !Modernizr.testStyles) return false;
-Support.ready(function() {
-	// Get style and link elements
-	var styleElements = document.head.getElementsByTagName("style"),
-		linkElements = document.head.getElementsByTagName("link"),
+	if (newblock === '') newblock = block;
+	return [newblock, buffer];
+};this.run = function() {
+	var support = this.support,
+		styleElements = document.head.getElementsByTagName('style'),
+		linkElements = document.head.getElementsByTagName('link'),
 		sources = [];
 
-	Support.each(styleElements, function(style) {
+	// Add all style tags to sources stack
+	support.each(styleElements, function(source) {
 		sources.push({
-			"type": "style",
-			"content": style.innerHTML,
-			"elem": style
+			type: 'local',
+			content: source.innerHTML,
+			element: source
 		});
 	});
 
-	Support.each(linkElements, function(link) {
-		// Ignore if it isn't a stylesheet
-		if (link.rel != "stylesheet") return false;
-
-		// Add to sources stack
+	// Add some link tags to source stack
+	support.each(linkElements, function(source) {
+		// Ignore if source.rel != "stylesheet"
+		if (source.rel !== "stylesheet") return false;
 		sources.push({
-			"type": "link",
-			"url": link.href,
-			"elem": link
+			type: 'remote',
+			url: source.href,
+			element: source
 		});
 	});
 
-	// If there are no sources, just die.
+	// If no sources exist, we have no work to do, so stop the function
 	if (sources.length < 1) return false;
 
-	// Iterate over the source, do the real work
-	(function(key) {
-		var source = sources[key], callee = arguments.callee;
-		// If the content is in a seperate file, load the content via ajax
-		if (source.type == "link" && !source.content) {
-			return Support.request(source.url, function(content) {
+	// Iterate over all of our sources, and do the real work
+	support.each(sources, function(source) {
+		// Cache the callee
+		var callee = arguments.callee;
+		// If the source is remote, fetch the content via AJAX
+		if (source.type === "remote" && !source.content) {
+			return support.request(source.url, function(content) {
 				source.content = content;
-				return callee(key);
+				return callee(source);
 			});
-		}
-		
-		// Normalise the sources content
-		source.content = normalise(source.content);
-		
-		// Tokenize and parse the content
-		var content = parse(source.content);
+		};
 
-		// Replace the old source with the new one!!
-		if (content != source.content) {
-			// Create a new source with the new content
-			// var elem = document.createElement("style");
-			// elem.type = "text/css";
-			// elem.innerHTML = content;
-			// document.head.appendChild(elem);
+		// Do a test to see if there actually is nesting.
+		var chrs = source.content.split(""),
+			level = 0,
+			nested = false;
 
-			if (source.type === "style") {
-				var elem = source.elem;
-			} else {
-				var elem = document.createElement("style");
-				elem.type = "text/css";
+		for (var key in chrs) {
+			var chr = chrs[key];
+			if (chr === '{') level++;
+			else if (chr === '}') level--;
+			if (level > 1) {
+				nested = true;
+				break;
 			};
+		};
 
-			elem.innerHTML = content;
+		// If there isn't nesting, move to the next source.
+		if (!nested) return false;
 
-			// Replace the old one
-			if (source.type !== "style") {
-				document.head.appendChild(elem);
-				source.elem.parentNode.removeChild(source.elem);
-			}
-		}
-	})(0);
-});})(window, document);
+		source.content = nesting.parse(source.content);
+
+		// Replace the old source, with the new one
+		if (source.type === "local") {
+			var elem = source.element;
+		} else {
+			var elem = document.createElement("style");
+			elem.type = "text/css";
+		};
+		elem.innerHTML = source.content;
+		if (source.type !== "local") {
+			document.head.appendChild(elem);
+			source.element.parentNode.removeChild(source.element);
+		};
+	});
+};	});
+	// Run nesting.js
+	nesting.support.ready(function() {
+		// Run nesting.run as part of nesting
+		nesting.run.call(nesting);
+	});
+})(window, document);

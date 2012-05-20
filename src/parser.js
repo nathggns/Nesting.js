@@ -23,6 +23,19 @@ this.parse = function(content) {
 	newblocks = [];
 
 	blocks = support.each(blocks, function(block) {
+		// Skip special blocks. Will support @media in the future.
+		var special = ["font-face", "media"],
+			isSpecial = false;
+
+		support.each(special, function(s) {
+			if (block.replace("@" + s, "") !== block) isSpecial = true;
+		});
+		if (isSpecial) {
+			newblocks.push(block);
+			return block;
+		}
+		
+		// Add this blocks to the stack
 		var newblock = nesting.shift(block);
 		newblocks.push(newblock[0]);
 		(function(block) {
