@@ -1,19 +1,5 @@
-body {
-	background: #000;
-
-	& header {
-		width: 100%;
-		height: 50px;
-		background: #ccc;
-
-		& p {
-			background: #f00;
-		}
+.remote {
+	& .not {
+		display: none;
 	}
-
-	color: #fff;
-}
-
-header {
-	font-weight: bold;
 }
