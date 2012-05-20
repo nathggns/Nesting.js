@@ -62,25 +62,33 @@ this.shift = function(block, parent) {
 	support.each(chrs, function(chr, key) {
 		if (mode === 'selector') {
 			selector += chr;
-		}
+		};
 		if (level > 1) {
 			buffer += chr;
-		} else if (mode === 'normal' && chr != "&") {
+		} else if (mode !== 'selector') {
 			newblock += chr;
-		}
+		};
 
 		switch (chr) {
+			case '/':
+				if (chrs[key+1] === '*') mode = 'comment';
+				break;
+			case '*':
+				if (mode === 'comment' && chrs[key+1] === '/') mode = 'normal';
+				break;
 			case '&':
-				if (level === 1) {
+				if (level === 1 && mode !== 'comment') {
 					mode = 'selector';
 					chr = '';
 				}
 				break;
 			case '{':
+				if (mode === 'comment') break;
 				mode = 'normal'
 				level++;
 				break;
 			case '}':
+				if (mode === 'comment') break;
 				level--;
 				break;
 		};
