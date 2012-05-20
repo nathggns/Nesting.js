@@ -40,22 +40,8 @@ this.run = function() {
 		};
 
 		// Do a test to see if there actually is nesting.
-		var chrs = source.content.split(""),
-			level = 0,
-			nested = false;
-
-		for (var key in chrs) {
-			var chr = chrs[key];
-			if (chr === '{') level++;
-			else if (chr === '}') level--;
-			if (level > 1) {
-				nested = true;
-				break;
-			};
-		};
-
 		// If there isn't nesting, move to the next source.
-		if (!nested) return false;
+		if (support.occurs(source.content, "{") < 2) return false;
 
 		source.content = nesting.parse(source.content);
 
