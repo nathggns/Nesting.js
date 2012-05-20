@@ -44,10 +44,10 @@ this.support = new (function() {
 	this.request = function(url, callback, mode) {
 		var req = new XMLHttpRequest;
 		req.open(mode || 'GET', url);
-		// Run callback when the request is done. Gonna use support.event
-		this.event(req, 'load', function() {
+		// Run callback when the request is done. Opera doesn't like support.event for this :/
+		req.onload = function() {
 			callback.call(nesting, req.responseText, req);
-		});
+		};
 		// Send the request
 		req.send();
 	};
@@ -185,7 +185,7 @@ this.shift = function(block, parent) {
 			parent = block.split("{")[0].trim();
 		};
 
-		buffer = parent + " " + selector.trim() + buffer.trim();
+		buffer = parent + selector.replace("\n", "").replace("\t", "") + buffer.trim();
 		buffer = this.shift(buffer);
 	};
 
