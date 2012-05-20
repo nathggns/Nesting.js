@@ -90,7 +90,7 @@ this.shift = function(block, parent) {
 			parent = block.split("{")[0].trim();
 		};
 
-		buffer = parent + " " + selector.trim() + buffer.trim();
+		buffer = parent + selector.replace("\n", "").replace("\t", "") + buffer.trim();
 		buffer = this.shift(buffer);
 	};
 
