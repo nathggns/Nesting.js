@@ -19,9 +19,6 @@
     "grunt-mocha-cli": "~1.0.6",
     "grunt-cli": "~0.1.7"
   },
-  "dependencies": {
-    "requirejs": "~2.1.8"
-  },
   "author": {
     "name": "Nathaniel Higgins",
     "email": "nat@nath.is",
