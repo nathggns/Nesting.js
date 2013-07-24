@@ -2,14 +2,14 @@
     if (typeof define === 'function' && define.amd) {
         require(['nesting/define'], factory);
     } else if (typeof exports === 'object') {
-        factory(require('./nesting/define')); 
+        factory(require('./define'));
     } else {
         factory(root.nesting.define);
     }
 })(this, function(define) {
+    define(this, 'nesting/parser', [], function(require, exports) {
+        exports.Parser = function Parser() {
 
-    define(this, 'nesting', ['nesting/parser'], function(require, exports) {
-        exports.parse = require('nesting/parser').Parser;
+        };
     });
-
 });
