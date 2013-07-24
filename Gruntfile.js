@@ -13,7 +13,7 @@ module.exports = function(grunt) {
             ' */\n'
       },
       dist: {
-        src: ['src/**/*.js'],
+        src: ['src/nesting/define.js', 'src/nesting/*.js', 'src/nesting.js'],
         dest: 'dist/<%= pkg.file || pkg.title || pkg.name %>.js'
       }
     },

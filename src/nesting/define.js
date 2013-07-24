@@ -53,7 +53,11 @@
                 var part = parts[i];
 
                 if (i > 0) {
-                    part = '_' + part;
+                    if (typeof obj._modules !== 'object') {
+                        obj._modules = {};
+                    }
+
+                    obj = obj._modules;
                 }
 
                 if (typeof obj[part] !== 'object') {
@@ -71,7 +75,7 @@
                     var part = parts[i];
 
                     if (i > 0) {
-                        part = '_' + part;
+                        obj = obj._modules;
                     }
 
                     obj = obj[part];

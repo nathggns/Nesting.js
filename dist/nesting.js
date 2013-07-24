@@ -3,21 +3,7 @@
  * Copyright (c) 2013 Nathaniel Higgins; Licensed MIT
  * Built on 2013-07-25 
  */
-(function(root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        require(['nesting/define'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('./nesting/define')); 
-    } else {
-        factory(root.nesting.define);
-    }
-})(this, function(define) {
-
-    define(this, 'nesting', ['nesting/parser'], function(require, exports) {
-        exports.parse = require('nesting/parser').Parser;
-    });
-
-});;(function (root, factory) {
+(function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define('nesting/define', [], function() {
@@ -72,7 +58,11 @@
                 var part = parts[i];
 
                 if (i > 0) {
-                    part = '_' + part;
+                    if (typeof obj._modules !== 'object') {
+                        obj._modules = {};
+                    }
+
+                    obj = obj._modules;
                 }
 
                 if (typeof obj[part] !== 'object') {
@@ -90,7 +80,7 @@
                     var part = parts[i];
 
                     if (i > 0) {
-                        part = '_' + part;
+                        obj = obj._modules;
                     }
 
                     obj = obj[part];
@@ -117,4 +107,18 @@
 
         };
     });
+});;(function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        require(['nesting/define'], factory);
+    } else if (typeof exports === 'object') {
+        factory(require('./nesting/define')); 
+    } else {
+        factory(root.nesting.define);
+    }
+})(this, function(define) {
+
+    define(this, 'nesting', ['nesting/parser'], function(require, exports) {
+        exports.parse = require('nesting/parser').Parser;
+    });
+
 });
